@@ -1,0 +1,1 @@
+Aplicação de seleção inteligente de candidatos, desenvolvida para otimizar o processo de triagem de uma consultoria de RH. O sistema filtra candidatos com base em critérios técnicos e culturais, gerando um ranking justificada dos melhores perfis e fornecendo feedback construtivo e respeitoso para candidatos não aprovados.
