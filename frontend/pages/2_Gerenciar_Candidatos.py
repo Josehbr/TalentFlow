@@ -71,10 +71,5 @@ def candidates_page():
     except Exception as e:
         st.error(f"Erro: {str(e)}")
 
-def add_footer():
-    st.markdown("---")
-    st.markdown("Feito com ❤️ por [seu nome ou time](link-para-seu-github)")
-
 if __name__ == "__main__":
     candidates_page()
-    add_footer()

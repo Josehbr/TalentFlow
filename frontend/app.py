@@ -8,16 +8,12 @@ def load_css(file_name):
 # Configuração da página
 st.set_page_config(
     page_title="TalentFlow - Seleção Inteligente",
-    page_icon="🚀",
+    page_icon="",
     layout="wide"
 )
 
 # URL da API
 API_URL = "http://localhost:8000"
-
-def add_footer():
-    st.markdown("---")
-    st.markdown("Feito com ❤️ por [seu nome ou time](link-para-seu-github)")
 
 def main():
     load_css("frontend/style.css")
@@ -52,4 +48,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    add_footer()

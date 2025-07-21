@@ -10,11 +10,11 @@ def load_css(file_name):
 
 def feedback_page():
     load_css("frontend/style.css")
-    st.header("💬 Geração de Feedback")
+    st.header("Geração de Feedback")
 
     # Verificar se há dados da sessão (vindos do ranking)
     if hasattr(st.session_state, 'feedback_candidate_id'):
-        st.info(f"🔄 Gerando feedback para: **{st.session_state.feedback_candidate_name}**")
+        st.info(f"Gerando feedback para: **{st.session_state.feedback_candidate_name}**")
         candidate_id = st.session_state.feedback_candidate_id
         job_description = st.session_state.feedback_job_description
 
@@ -28,8 +28,6 @@ def feedback_page():
 
     else:
         # Interface com grid de candidatos
-        st.info("💡 Selecione uma vaga para ver os candidatos e gerar feedback personalizado.")
-
         # Carregar vagas disponíveis
         try:
             response = requests.get(f"{API_URL}/jobs/")
@@ -43,13 +41,13 @@ def feedback_page():
 
                     with col1:
                         # Criar dicionário para mapear título -> vaga completa
-                        vaga_options = {"🔍 Todas as vagas": None}
+                        vaga_options = {"Todas as vagas": None}
                         for vaga in vagas:
-                            titulo_completo = f"🎯 {vaga['titulo']}"
+                            titulo_completo = f"{vaga['titulo']}"
                             vaga_options[titulo_completo] = vaga
 
                         vaga_selecionada_key = st.selectbox(
-                            "📋 Filtrar por Vaga:",
+                            "Filtrar por Vaga:",
                             options=list(vaga_options.keys()),
                             help="Selecione uma vaga específica para filtrar candidatos"
                         )
@@ -58,7 +56,7 @@ def feedback_page():
 
                     with col2:
                         # Botão para atualizar dados
-                        if st.button("🔄 Atualizar", help="Recarregar dados de candidatos"):
+                        if st.button("Atualizar", help="Recarregar dados de candidatos"):
                             st.rerun()
 
                     st.markdown("---")
@@ -122,13 +120,13 @@ def feedback_page():
                                 candidatos = candidatos_filtrados
 
                                 if candidatos:
-                                    st.success(f"✅ {len(candidatos)} candidato(s) encontrado(s)")
+                                    st.success(f"{len(candidatos)} candidato(s) encontrado(s)")
                                 else:
-                                    st.warning("⚠️ Nenhum candidato encontrado com os critérios de pesquisa")
+                                    st.warning("Nenhum candidato encontrado com os critérios de pesquisa")
 
                             # Grid de candidatos
                             if candidatos:
-                                st.markdown("### 📋 Lista de Candidatos")
+                                st.markdown("### Lista de Candidatos")
 
                                 # Configurar paginação
                                 items_per_page = 5
@@ -157,23 +155,23 @@ def feedback_page():
                                         col1, col2, col3, col4 = st.columns([3, 2, 2, 2])
 
                                         with col1:
-                                            st.markdown(f"**👤 {candidato.get('nome', 'N/A')}**")
-                                            st.markdown(f"📧 {candidato.get('email', 'N/A')}")
+                                            st.markdown(f"**{candidato.get('nome', 'N/A')}**")
+                                            st.markdown(f"{candidato.get('email', 'N/A')}")
 
                                             # Mostrar vaga se não estiver filtrada
                                             if not vaga_selecionada and candidato.get('vaga_titulo'):
-                                                st.markdown(f"🎯 *{candidato.get('vaga_titulo', 'N/A')}*")
+                                                st.markdown(f"*{candidato.get('vaga_titulo', 'N/A')}*")
 
                                         with col2:
-                                            st.markdown(f"**🆔 ID:** {candidato.get('id', 'N/A')}")
+                                            st.markdown(f"**ID:** {candidato.get('id', 'N/A')}")
                                             if candidato.get('vaga_id'):
-                                                st.markdown(f"**🎯 Vaga ID:** {candidato.get('vaga_id', 'N/A')}")
+                                                st.markdown(f"**Vaga ID:** {candidato.get('vaga_id', 'N/A')}")
 
                                         with col3:
                                             # Mostrar habilidades principais
                                             skills = candidato.get('dados_perfil', {}).get('skills', [])
                                             if skills:
-                                                st.markdown("**🛠️ Habilidades:**")
+                                                st.markdown("**Habilidades:**")
                                                 skills_text = ", ".join(skills[:3])  # Mostrar apenas 3 primeiras
                                                 if len(skills) > 3:
                                                     skills_text += f" (+{len(skills)-3})"
@@ -186,7 +184,7 @@ def feedback_page():
                                             if candidato.get('vaga_id'):
                                                 # Se o candidato tem uma vaga, mostrar botão para gerar feedback
                                                 if st.button(
-                                                    f"💬 Gerar Feedback",
+                                                    f"Gerar Feedback",
                                                     key=f"feedback_auto_{candidato['id']}",
                                                     help=f"Gerar feedback para {candidato.get('nome')} na vaga {candidato.get('vaga_titulo')}",
                                                     use_container_width=True
@@ -207,7 +205,7 @@ def feedback_page():
                                             else:
                                                 # Se não há vaga associada, mostrar botão para selecionar vaga
                                                 if st.button(
-                                                    f"🎯 Selecionar Vaga",
+                                                    f"Selecionar Vaga",
                                                     key=f"select_job_{candidato['id']}",
                                                     help=f"Selecionar vaga para gerar feedback de {candidato.get('nome')}",
                                                     use_container_width=True
@@ -217,7 +215,7 @@ def feedback_page():
 
                                             # Botão para ver detalhes
                                             if st.button(
-                                                f"👀 Detalhes",
+                                                f"Detalhes",
                                                 key=f"details_{candidato['id']}",
                                                 help=f"Ver detalhes completos de {candidato.get('nome')}",
                                                 use_container_width=True
@@ -229,13 +227,13 @@ def feedback_page():
                                         if f"feedback_result_{candidato['id']}" in st.session_state:
                                             result = st.session_state[f"feedback_result_{candidato['id']}"]
                                             with st.container():
-                                                st.markdown(f"### 💬 Feedback para {result['candidate_name']}")
-                                                st.markdown(f"**📧 Email:** {result['candidate_email']}")
-                                                st.markdown(f"**🎯 Vaga:** {result['job_title']}")
+                                                st.markdown(f"### Feedback para {result['candidate_name']}")
+                                                st.markdown(f"**Email:** {result['candidate_email']}")
+                                                st.markdown(f"**Vaga:** {result['job_title']}")
                                                 st.markdown("---")
-                                                st.markdown("**🤖 Feedback Gerado:**")
+                                                st.markdown("**Feedback Gerado:**")
                                                 st.markdown(result["feedback"], unsafe_allow_html=True)
-                                                if st.button("❌ Fechar Feedback", key=f"close_feedback_{candidato['id']}"):
+                                                if st.button("Fechar Feedback", key=f"close_feedback_{candidato['id']}"):
                                                     del st.session_state[f"feedback_result_{candidato['id']}"]
                                                     st.rerun()
 
@@ -343,11 +341,11 @@ def feedback_page():
 def generate_feedback_for_candidate(candidate_id, job_description, candidate_name="Candidato", job_title="Vaga"):
     """Função auxiliar para gerar feedback de um candidato"""
     if not job_description or not job_description.strip():
-        st.error("❌ Descrição da vaga não disponível para gerar feedback")
+        st.error("Descrição da vaga não disponível para gerar feedback")
         return
 
     try:
-        with st.spinner(f"🤖 Gerando feedback para {candidate_name}..."):
+        with st.spinner(f"Gerando feedback para {candidate_name}..."):
             payload = {"job_description": job_description.strip()}
             response = requests.post(
                 f"{API_URL}/candidates/{candidate_id}/feedback",
@@ -361,17 +359,12 @@ def generate_feedback_for_candidate(candidate_id, job_description, candidate_nam
                 st.rerun()
 
             elif response.status_code == 404:
-                st.error(f"❌ Candidato {candidate_name} não encontrado")
+                st.error(f"Candidato {candidate_name} não encontrado")
             else:
-                st.error(f"❌ Erro ao gerar feedback: {response.text}")
+                st.error(f"Erro ao gerar feedback: {response.text}")
 
     except Exception as e:
-        st.error(f"❌ Erro: {str(e)}")
-
-def add_footer():
-    st.markdown("---")
-    st.markdown("Feito com ❤️ por [seu nome ou time](link-para-seu-github)")
+        st.error(f"Erro: {str(e)}")
 
 if __name__ == "__main__":
     feedback_page()
-    add_footer()
