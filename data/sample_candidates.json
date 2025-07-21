@@ -1,0 +1,64 @@
+{
+  "candidates": [
+    {
+      "name": "Ana Costa",
+      "email": "ana.costa@exemplo.com",
+      "experience": [
+        {
+          "position": "Desenvolvedora Frontend",
+          "company": "TechCorp",
+          "duration": "2 anos",
+          "description": "Desenvolvimento de aplicações React com TypeScript, implementação de testes unitários e integração contínua."
+        }
+      ],
+      "skills": ["React", "TypeScript", "JavaScript", "Redux", "Jest", "CSS3", "HTML5"],
+      "education": [
+        {
+          "degree": "Bacharelado",
+          "field": "Ciência da Computação",
+          "institution": "UFMG"
+        }
+      ]
+    },
+    {
+      "name": "Carlos Silva",
+      "email": "carlos.silva@exemplo.com",
+      "experience": [
+        {
+          "position": "Desenvolvedor Frontend Júnior",
+          "company": "StartupXYZ",
+          "duration": "1 ano",
+          "description": "Desenvolvimento de interfaces com React e integração com APIs REST."
+        }
+      ],
+      "skills": ["React", "JavaScript", "HTML5", "CSS3", "Git"],
+      "education": [
+        {
+          "degree": "Tecnólogo",
+          "field": "Análise e Desenvolvimento de Sistemas",
+          "institution": "FATEC"
+        }
+      ]
+    },
+    {
+      "name": "Beatriz Santos",
+      "email": "beatriz.santos@exemplo.com",
+      "experience": [
+        {
+          "position": "Desenvolvedora Full Stack",
+          "company": "WebSolutions",
+          "duration": "3 anos",
+          "description": "Desenvolvimento frontend com React e Next.js, backend com Node.js, testes automatizados com Jest e Cypress."
+        }
+      ],
+      "skills": ["React", "Next.js", "TypeScript", "Node.js", "Jest", "Cypress", "Redux"],
+      "education": [
+        {
+          "degree": "Bacharelado",
+          "field": "Engenharia de Software",
+          "institution": "USP"
+        }
+      ]
+    }
+  ]
+}

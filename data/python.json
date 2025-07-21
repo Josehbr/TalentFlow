@@ -1,0 +1,24 @@
+{
+  "candidates": [
+    {
+      "name": "Mariana Oliveira",
+      "email": "mariana.oliveira@exemplo.com",
+      "experience": [
+        {
+          "position": "Analista de Dados",
+          "company": "DataCorp",
+          "duration": "2 anos",
+          "description": "Desenvolvimento de pipelines de dados com Python, análise estatística com Pandas e NumPy, visualização de dados com Matplotlib e Seaborn, automação de relatórios com Jupyter Notebooks."
+        }
+      ],
+      "skills": ["Python", "Pandas", "NumPy", "Matplotlib", "Seaborn", "SQL", "Jupyter", "Power BI"],
+      "education": [
+        {
+          "degree": "Bacharelado",
+          "field": "Estatística",
+          "institution": "UNICAMP"
+        }
+      ]
+    }
+  ]
+}

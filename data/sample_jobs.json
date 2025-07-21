@@ -1,0 +1,34 @@
+{
+  "jobs": [
+    {
+      "title": "Desenvolvedor Frontend React",
+      "description": "Vaga para desenvolvedor frontend especializado em React.js. Requisitos: 2+ anos de experiência com React, conhecimento em TypeScript, Redux, e testes automatizados. Experiência com Next.js será um diferencial.",
+      "structured_description": {
+        "required_skills": ["React", "JavaScript", "TypeScript", "Redux"],
+        "preferred_skills": ["Next.js", "Jest", "Cypress"],
+        "experience_level": "Pleno",
+        "years_required": 2
+      }
+    },
+    {
+      "title": "Desenvolvedor Backend Node.js",
+      "description": "Desenvolvedor backend para trabalhar com Node.js e APIs REST. Requisitos: 3+ anos Node.js, Express, MongoDB, conhecimento em Docker e AWS. Experiência com microserviços é desejável.",
+      "structured_description": {
+        "required_skills": ["Node.js", "Express", "MongoDB", "REST APIs"],
+        "preferred_skills": ["Docker", "AWS", "Microservices"],
+        "experience_level": "Sênior",
+        "years_required": 3
+      }
+    },
+    {
+      "title": "Analista de Dados Python",
+      "description": "Analista de dados para trabalhar com Python, pandas, e machine learning. Requisitos: 2+ anos Python, pandas, numpy, scikit-learn, conhecimento em SQL e visualização de dados.",
+      "structured_description": {
+        "required_skills": ["Python", "Pandas", "NumPy", "SQL"],
+        "preferred_skills": ["Scikit-learn", "Matplotlib", "Tableau"],
+        "experience_level": "Pleno",
+        "years_required": 2
+      }
+    }
+  ]
+}

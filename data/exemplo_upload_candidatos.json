@@ -1,0 +1,36 @@
+{
+  "candidates": [
+    {
+      "name": "João Silva",
+      "email": "joao.silva@exemplo.com",
+      "profile_data": {
+        "summary": "Desenvolvedor Python com 3 anos de experiência em desenvolvimento web e APIs REST.",
+        "experience": [
+          {
+            "title": "Desenvolvedor Python Jr",
+            "company": "TechCorp",
+            "period": "2021-2024",
+            "description": "Desenvolvimento de APIs REST com FastAPI, integração com bancos de dados PostgreSQL e implementação de testes automatizados."
+          }
+        ],
+        "skills": ["Python", "FastAPI", "PostgreSQL", "Git", "Docker"]
+      }
+    },
+    {
+      "name": "Maria Santos",
+      "email": "maria.santos@exemplo.com",
+      "profile_data": {
+        "summary": "Desenvolvedora Full Stack com experiência em React e Node.js.",
+        "experience": [
+          {
+            "title": "Desenvolvedora Full Stack",
+            "company": "WebSolutions",
+            "period": "2020-2024",
+            "description": "Desenvolvimento de aplicações web completas usando React no frontend e Node.js no backend."
+          }
+        ],
+        "skills": ["JavaScript", "React", "Node.js", "MongoDB", "CSS"]
+      }
+    }
+  ]
+}
