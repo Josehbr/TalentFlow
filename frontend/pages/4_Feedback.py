@@ -183,22 +183,29 @@ def feedback_page():
 
                                         with col4:
                                             # Botões de ação
-                                            if vaga_selecionada:
-                                                # Se vaga está selecionada, usar sua descrição
+                                            if candidato.get('vaga_id'):
+                                                # Se o candidato tem uma vaga, mostrar botão para gerar feedback
                                                 if st.button(
                                                     f"💬 Gerar Feedback",
                                                     key=f"feedback_auto_{candidato['id']}",
-                                                    help=f"Gerar feedback para {candidato.get('nome')} na vaga {vaga_selecionada['titulo']}",
+                                                    help=f"Gerar feedback para {candidato.get('nome')} na vaga {candidato.get('vaga_titulo')}",
                                                     use_container_width=True
                                                 ):
-                                                    generate_feedback_for_candidate(
-                                                        candidato['id'],
-                                                        vaga_selecionada.get('descricao', ''),
-                                                        candidato.get('nome', 'Candidato'),
-                                                        vaga_selecionada['titulo']
-                                                    )
+                                                    # Precisamos da descrição da vaga, que não está no objeto candidato.
+                                                    # Vamos buscar a vaga correspondente.
+                                                    vaga_info = next((v for v in vagas if v['id'] == candidato['vaga_id']), None)
+                                                    if vaga_info:
+                                                        generate_feedback_for_candidate(
+                                                            candidato['id'],
+                                                            vaga_info.get('descricao', ''),
+                                                            candidato.get('nome', 'Candidato'),
+                                                            vaga_info['titulo']
+                                                        )
+                                                    else:
+                                                        st.error("Não foi possível encontrar a descrição da vaga para gerar o feedback.")
+
                                             else:
-                                                # Se não há vaga selecionada, mostrar botão para selecionar vaga
+                                                # Se não há vaga associada, mostrar botão para selecionar vaga
                                                 if st.button(
                                                     f"🎯 Selecionar Vaga",
                                                     key=f"select_job_{candidato['id']}",
@@ -217,6 +224,21 @@ def feedback_page():
                                             ):
                                                 st.session_state[f"show_details_{candidato['id']}"] = True
                                                 st.rerun()
+
+                                        # Mostrar feedback se ele existir no session_state
+                                        if f"feedback_result_{candidato['id']}" in st.session_state:
+                                            result = st.session_state[f"feedback_result_{candidato['id']}"]
+                                            with st.container():
+                                                st.markdown(f"### 💬 Feedback para {result['candidate_name']}")
+                                                st.markdown(f"**📧 Email:** {result['candidate_email']}")
+                                                st.markdown(f"**🎯 Vaga:** {result['job_title']}")
+                                                st.markdown("---")
+                                                st.markdown("**🤖 Feedback Gerado:**")
+                                                st.markdown(result["feedback"], unsafe_allow_html=True)
+                                                if st.button("❌ Fechar Feedback", key=f"close_feedback_{candidato['id']}"):
+                                                    del st.session_state[f"feedback_result_{candidato['id']}"]
+                                                    st.rerun()
+
 
                                         # Mostrar seletor de vaga se solicitado
                                         if st.session_state.get(f"show_job_selector_{candidato['id']}", False):
@@ -334,49 +356,9 @@ def generate_feedback_for_candidate(candidate_id, job_description, candidate_nam
 
             if response.status_code == 200:
                 result = response.json()
-
-                st.success(f"✅ Feedback gerado para {candidate_name}!")
-
-                # Mostrar resultado em um container destacado
-                with st.container():
-                    st.markdown(f"### 💬 Feedback para {result['candidate_name']}")
-                    st.markdown(f"**📧 Email:** {result['candidate_email']}")
-                    st.markdown(f"**🎯 Vaga:** {job_title}")
-
-                    st.markdown("---")
-
-                    # Feedback formatado
-                    st.markdown("**🤖 Feedback Gerado:**")
-                    with st.container():
-                        st.markdown(
-                            f"""
-                            <div style="
-                                width: 100%;
-                                max-width: 800px;
-                                background-color: #e0e3e7;
-                                color: #333;
-                                padding: 20px;
-                                border-radius: 10px;
-                                border-left: 5px solid #1f77b4;
-                                margin: 20px auto;
-                            ">
-                                {result["feedback"].replace('**', '<strong>').replace('**', '</strong>')}
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-
-                    # Opções adicionais
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        if st.button(f"📋 Copiar Feedback", key=f"copy_{candidate_id}"):
-                            st.info("🚧 Funcionalidade em desenvolvimento")
-                    with col2:
-                        if st.button(f"📧 Enviar Email", key=f"email_{candidate_id}"):
-                            st.info("🚧 Funcionalidade em desenvolvimento")
-                    with col3:
-                        if st.button(f"💾 Salvar", key=f"save_{candidate_id}"):
-                            st.info("🚧 Funcionalidade em desenvolvimento")
+                result['job_title'] = job_title
+                st.session_state[f"feedback_result_{candidate_id}"] = result
+                st.rerun()
 
             elif response.status_code == 404:
                 st.error(f"❌ Candidato {candidate_name} não encontrado")

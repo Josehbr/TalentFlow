@@ -63,13 +63,13 @@ def ranking_page():
                         if st.button("🚀 Gerar Ranking Completo", type="primary", use_container_width=True):
                             try:
                                 with st.spinner("🔄 Gerando ranking... Isso pode levar alguns segundos."):
-                                    # Fazer requisição sem top_k para pegar todos os candidatos
-                                    response = requests.get(f"{API_URL}/jobs/{job_id}/rank")
+                                    # Fazer requisição para obter os candidatos da vaga
+                                    response = requests.get(f"{API_URL}/jobs/{job_id}/candidates")
 
                                     if response.status_code == 200:
                                         result = response.json()
 
-                                        st.success("✅ Ranking gerado com sucesso!")
+                                        st.success("✅ Candidatos carregados com sucesso!")
 
                                         # Informações da vaga
                                         st.subheader(f"🎯 {result['vaga']['titulo']}")
@@ -80,58 +80,31 @@ def ranking_page():
                                                 st.write(result['vaga']['descricao'])
 
                                         # Métricas em cards
-                                        col1, col2, col3 = st.columns(3)
+                                        col1, col2 = st.columns(2)
                                         with col1:
                                             st.metric(
                                                 "👥 Candidatos Encontrados",
-                                                result["total_candidatos_encontrados"],
+                                                result["total_candidatos"],
                                                 help="Total de candidatos que se candidataram para esta vaga"
-                                            )
-                                        with col2:
-                                            st.metric(
-                                                "🤖 Modelo de Embedding",
-                                                result["parametros_busca"]["embedding_model"].replace("text-embedding-", ""),
-                                                help="Modelo usado para gerar embeddings"
-                                            )
-                                        with col3:
-                                            st.metric(
-                                                "🧠 Modelo de Justificativa",
-                                                result["parametros_busca"]["justification_model"],
-                                                help="Modelo de IA usado para gerar justificativas"
                                             )
 
                                         # Verificar se há candidatos
-                                        if result["total_candidatos_encontrados"] == 0:
+                                        if result["total_candidatos"] == 0:
                                             st.warning("⚠️ Nenhum candidato encontrado para esta vaga.")
                                             st.info("💡 **Dica:** Faça upload de candidatos para esta vaga na aba 'Gerenciar Candidatos'.")
                                         else:
-                                            # Ranking de candidatos
-                                            st.subheader("🏆 Ranking de Candidatos")
-                                            st.write(f"Mostrando **{len(result['candidatos_ranqueados'])}** candidatos ordenados por relevância:")
+                                            # Lista de candidatos
+                                            st.subheader("📋 Candidatos da Vaga")
 
-                                            for i, candidato in enumerate(result["candidatos_ranqueados"]):
-                                                # Definir cor do badge baseado na posição
-                                                if candidato['posicao'] == 1:
-                                                    badge_color = "🥇"
-                                                elif candidato['posicao'] == 2:
-                                                    badge_color = "🥈"
-                                                elif candidato['posicao'] == 3:
-                                                    badge_color = "🥉"
-                                                else:
-                                                    badge_color = f"#{candidato['posicao']}"
-
+                                            for i, candidato in enumerate(result["candidatos"]):
                                                 with st.container():
-                                                    st.markdown(f"### {badge_color} **{candidato['nome']}**")
+                                                    st.markdown(f"### **{candidato['nome']}**")
                                                     st.write(f"**Email:** {candidato['email']}")
 
                                                     # Tabs para organizar informações
-                                                    tab1, tab2, tab3 = st.tabs(["🤖 Justificativa IA", "👤 Perfil", "📊 Dados"])
+                                                    tab1, tab2 = st.tabs(["👤 Perfil", "📊 Dados"])
 
                                                     with tab1:
-                                                        st.markdown("**Análise gerada por IA:**")
-                                                        st.write(candidato["justificativa"])
-
-                                                    with tab2:
                                                         if candidato.get("dados_perfil"):
                                                             perfil = candidato["dados_perfil"]
 
@@ -157,20 +130,16 @@ def ranking_page():
                                                         else:
                                                             st.info("ℹ️ Dados do perfil não disponíveis")
 
-                                                    with tab3:
-                                                        col1, col2 = st.columns(2)
-                                                        with col1:
-                                                            st.metric("🆔 ID do Candidato", candidato['candidato_id'])
-                                                        with col2:
-                                                            st.metric("📍 Posição no Ranking", candidato['posicao'])
+                                                    with tab2:
+                                                        st.metric("🆔 ID do Candidato", candidato['id'])
 
                                                         # Botão para gerar feedback
                                                         if st.button(
                                                             f"💬 Gerar Feedback para {candidato['nome']}",
-                                                            key=f"feedback_{candidato['candidato_id']}"
+                                                            key=f"feedback_{candidato['id']}"
                                                         ):
                                                             st.info("🔄 Redirecionando para a página de feedback...")
-                                                            st.session_state.feedback_candidate_id = candidato['candidato_id']
+                                                            st.session_state.feedback_candidate_id = candidato['id']
                                                             st.session_state.feedback_candidate_name = candidato['nome']
                                                             st.session_state.feedback_job_description = result['vaga']['descricao']
                                                             st.rerun()
@@ -179,7 +148,7 @@ def ranking_page():
                                     elif response.status_code == 404:
                                         st.error("❌ Vaga não encontrada")
                                     else:
-                                        st.error(f"❌ Erro ao gerar ranking: {response.text}")
+                                        st.error(f"❌ Erro ao carregar candidatos: {response.text}")
                             except Exception as e:
                                 st.error(f"❌ Erro: {str(e)}")
             else:
