@@ -53,7 +53,7 @@ def jobs_page():
     with tab2:
         st.subheader("Vagas Cadastradas")
 
-        if st.button("Atualizar Lista"):
+        if st.button("Listar Vagas"):
             try:
                 response = requests.get(f"{API_URL}/jobs/")
 
@@ -64,7 +64,7 @@ def jobs_page():
                         st.info(f"Total de vagas: {result['total_vagas']}")
 
                         for vaga in result["vagas"]:
-                            with st.container():
+                            with st.container(border=True):
                                 st.subheader(vaga['titulo'])
                                 st.write(f"**ID:** {vaga['id']}")
                                 st.write(f"**Descrição:** {vaga['descricao_resumida']}")
@@ -72,6 +72,26 @@ def jobs_page():
                                     st.success("Possui descrição estruturada")
                                 else:
                                     st.warning("Sem descrição estruturada")
+
+                                with st.expander("Upload de Candidatos para esta Vaga"):
+                                    uploaded_file = st.file_uploader(
+                                        "Escolha um arquivo JSON com candidatos",
+                                        type=['json'],
+                                        key=f"upload_{vaga['id']}"
+                                    )
+                                    if uploaded_file:
+                                        if st.button("Processar Candidatos", key=f"process_{vaga['id']}"):
+                                            files = {"file": uploaded_file}
+                                            upload_response = requests.post(f"{API_URL}/candidates/upload/{vaga['id']}", files=files)
+                                            if upload_response.status_code == 200:
+                                                st.success("Candidatos processados com sucesso!")
+                                            else:
+                                                st.error(f"Erro no upload: {upload_response.text}")
+
+                                if st.button("Listar Candidatos", key=f"list_{vaga['id']}"):
+                                    st.session_state.vaga_id_para_listar = vaga['id']
+                                    st.switch_page("pages/3_Ranking.py")
+
                                 st.markdown("---")
                     else:
                         st.info("Nenhuma vaga cadastrada ainda")

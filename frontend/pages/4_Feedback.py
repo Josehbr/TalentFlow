@@ -150,7 +150,7 @@ def feedback_page():
 
                                 # Mostrar candidatos da página atual
                                 for i, candidato in enumerate(candidatos_pagina):
-                                    with st.container():
+                                    with st.container(border=True):
                                         # Card do candidato
                                         col1, col2, col3, col4 = st.columns([3, 2, 2, 2])
 

@@ -39,7 +39,22 @@ def ranking_page():
                     help="Escolha a vaga para a qual deseja ver o ranking de candidatos"
                 )
 
-                if vaga_selecionada:
+                if "vaga_id_para_listar" in st.session_state:
+                    job_id = st.session_state.vaga_id_para_listar
+                    del st.session_state.vaga_id_para_listar  # Limpa para não recarregar
+
+                    try:
+                        with st.spinner("Carregando candidatos..."):
+                            response = requests.get(f"{API_URL}/jobs/{job_id}/candidates")
+                            if response.status_code == 200:
+                                result = response.json()
+                                display_candidates(result)
+                            else:
+                                st.error("Erro ao carregar candidatos.")
+                    except Exception as e:
+                        st.error(f"Erro: {str(e)}")
+
+                elif vaga_selecionada:
                     job_id = vaga_options[vaga_selecionada]
 
                     # Mostrar informações da vaga selecionada
@@ -58,88 +73,91 @@ def ranking_page():
                     # Botão para gerar ranking
                     col1, col2, col3 = st.columns([1, 2, 1])
                     with col2:
-                        if st.button("Gerar Ranking Completo", type="primary", use_container_width=True):
+                        if st.button("Listar Candidatos", type="primary", use_container_width=True):
                             try:
-                                with st.spinner("Gerando ranking... Isso pode levar alguns segundos."):
+                                with st.spinner("Carregando candidatos..."):
                                     # Fazer requisição para obter os candidatos da vaga
                                     response = requests.get(f"{API_URL}/jobs/{job_id}/candidates")
 
+def display_candidates(result):
+    # Informações da vaga
+    st.subheader(f"{result['vaga']['titulo']}")
+
+    # Mostrar descrição completa se disponível
+    if result['vaga'].get('descricao'):
+        with st.expander("Descrição Completa da Vaga"):
+            st.write(result['vaga']['descricao'])
+
+    # Métricas em cards
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(
+            "Candidatos Encontrados",
+            result["total_candidatos"],
+            help="Total de candidatos que se candidataram para esta vaga"
+        )
+
+    # Verificar se há candidatos
+    if result["total_candidatos"] == 0:
+        st.warning("Nenhum candidato encontrado para esta vaga.")
+    else:
+        # Lista de candidatos
+        st.subheader("Candidatos da Vaga")
+
+        for i, candidato in enumerate(result["candidatos"]):
+            with st.container():
+                st.markdown(f"### **{i+1}. {candidato['nome']}**")
+                st.write(f"**Email:** {candidato['email']}")
+
+                # Tabs para organizar informações
+                tab1, tab2 = st.tabs(["Perfil", "Dados"])
+
+                with tab1:
+                    if candidato.get("dados_perfil"):
+                        perfil = candidato["dados_perfil"]
+
+                        # Habilidades
+                        if perfil.get("skills"):
+                            st.markdown("**Habilidades:**")
+                            skills_text = ", ".join(perfil["skills"])
+                            st.write(skills_text)
+
+                        # Resumo
+                        if perfil.get("summary"):
+                            st.markdown("**Resumo:**")
+                            st.write(perfil["summary"])
+
+                        # Experiência
+                        if perfil.get("experience"):
+                            st.markdown("**Experiência:**")
+                            for exp in perfil["experience"]:
+                                if isinstance(exp, dict):
+                                    st.write(f"• **{exp.get('title', 'N/A')}** - {exp.get('company', 'N/A')} ({exp.get('period', 'N/A')})")
+                                    if exp.get('description'):
+                                        st.write(f"  {exp['description']}")
+                    else:
+                        st.info("Dados do perfil não disponíveis")
+
+                with tab2:
+                    st.metric("ID do Candidato", candidato['id'])
+
+                    # Botão para gerar feedback
+                    if st.button(
+                        f"Gerar Feedback para {candidato['nome']}",
+                        key=f"feedback_{candidato['id']}"
+                    ):
+                        st.info("Redirecionando para a página de feedback...")
+                        st.session_state.feedback_candidate_id = candidato['id']
+                        st.session_state.feedback_candidate_name = candidato['nome']
+                        st.session_state.feedback_job_description = result['vaga']['descricao']
+                        st.rerun()
+                st.markdown("---")
+
+...
+
                                     if response.status_code == 200:
                                         result = response.json()
-
-                                        # Informações da vaga
-                                        st.subheader(f"{result['vaga']['titulo']}")
-
-                                        # Mostrar descrição completa se disponível
-                                        if result['vaga'].get('descricao'):
-                                            with st.expander("Descrição Completa da Vaga"):
-                                                st.write(result['vaga']['descricao'])
-
-                                        # Métricas em cards
-                                        col1, col2 = st.columns(2)
-                                        with col1:
-                                            st.metric(
-                                                "Candidatos Encontrados",
-                                                result["total_candidatos"],
-                                                help="Total de candidatos que se candidataram para esta vaga"
-                                            )
-
-                                        # Verificar se há candidatos
-                                        if result["total_candidatos"] == 0:
-                                            st.warning("Nenhum candidato encontrado para esta vaga.")
-                                        else:
-                                            # Lista de candidatos
-                                            st.subheader("Candidatos da Vaga")
-
-                                            for i, candidato in enumerate(result["candidatos"]):
-                                                with st.container():
-                                                    st.markdown(f"### **{i+1}. {candidato['nome']}**")
-                                                    st.write(f"**Email:** {candidato['email']}")
-
-                                                    # Tabs para organizar informações
-                                                    tab1, tab2 = st.tabs(["Perfil", "Dados"])
-
-                                                    with tab1:
-                                                        if candidato.get("dados_perfil"):
-                                                            perfil = candidato["dados_perfil"]
-
-                                                            # Habilidades
-                                                            if perfil.get("skills"):
-                                                                st.markdown("**Habilidades:**")
-                                                                skills_text = ", ".join(perfil["skills"])
-                                                                st.write(skills_text)
-
-                                                            # Resumo
-                                                            if perfil.get("summary"):
-                                                                st.markdown("**Resumo:**")
-                                                                st.write(perfil["summary"])
-
-                                                            # Experiência
-                                                            if perfil.get("experience"):
-                                                                st.markdown("**Experiência:**")
-                                                                for exp in perfil["experience"]:
-                                                                    if isinstance(exp, dict):
-                                                                        st.write(f"• **{exp.get('title', 'N/A')}** - {exp.get('company', 'N/A')} ({exp.get('period', 'N/A')})")
-                                                                        if exp.get('description'):
-                                                                            st.write(f"  {exp['description']}")
-                                                        else:
-                                                            st.info("Dados do perfil não disponíveis")
-
-                                                    with tab2:
-                                                        st.metric("ID do Candidato", candidato['id'])
-
-                                                        # Botão para gerar feedback
-                                                        if st.button(
-                                                            f"Gerar Feedback para {candidato['nome']}",
-                                                            key=f"feedback_{candidato['id']}"
-                                                        ):
-                                                            st.info("Redirecionando para a página de feedback...")
-                                                            st.session_state.feedback_candidate_id = candidato['id']
-                                                            st.session_state.feedback_candidate_name = candidato['nome']
-                                                            st.session_state.feedback_job_description = result['vaga']['descricao']
-                                                            st.rerun()
-                                                    st.markdown("---")
-
+                                        display_candidates(result)
                                     elif response.status_code == 404:
                                         st.error("Vaga não encontrada")
                                     else:
